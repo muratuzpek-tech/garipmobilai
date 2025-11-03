@@ -1,19 +1,20 @@
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 
-# FastAPI uygulaması oluştur
 app = FastAPI()
 
-# Ana URL
 @app.get("/")
-def read_root():
-    return {"message": "🚀 GaripMobil AI çalışıyor!"}
+def home():
+    return {"message": "GaripMobilAI başarıyla çalışıyor 🚀"}
 
-# Test endpoint
-@app.get("/ping")
-def ping():
-    return {"status": "ok", "message": "pong!"}
-
-# Örnek API (dinamik parametre ile)
 @app.get("/hello/{name}")
 def say_hello(name: str):
-    return {"message": f"Merhaba {name}! GaripMobil AI seni selamlıyor 🤖"}
+    return JSONResponse(content={"message": f"Merhaba {name}, sistem aktif!"})
+
+# Railway otomatik olarak PORT değişkenini belirler
+# Ancak yerelde test ederken port 8000'de çalışır
+if __name__ == "__main__":
+    import uvicorn
+    import os
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
