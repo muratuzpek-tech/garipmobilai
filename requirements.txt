@@ -1,6 +1,6 @@
 fastapi
 uvicorn
 gunicorn
-web: gunicorn main:app
+
 
 
