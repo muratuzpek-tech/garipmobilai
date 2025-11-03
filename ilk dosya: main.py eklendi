@@ -1,63 +1,19 @@
-main.py
-from flask import Flask, request, jsonify
-import os, requests
+from fastapi import FastAPI
 
-app = Flask(__name__)
-OPENAI_KEY = os.getenv("OPENAI_API_KEY", None)
-
-@app.route("/")
-def home():
-    return "GaripMobilAI - live (Flask)!"
-
-@app.route("/ask", methods=["POST"])
-def ask():
-    data = request.get_json(silent=True) or {}
-    question = data.get("question", "")
-    if not question:
-        return jsonify({"error": "Please send JSON with field 'question'"}), 400
-
-    # Eğer OpenAI anahtarı varsa modelden cevap al
-    if OPENAI_KEY:
-        try:
-            headers = {
-                "Authorization": f"Bearer {OPENAI_KEY}",
-                "Content-Type": "application/json"
-            }
-            payload = {
-                "model": "gpt-3.5-turbo",
-                "messages": [{"role": "user", "content": question}],
-                "max_tokens": 150
-            }
-            resp = requests.post(
-                "https://api.openai.com/v1/chat/completions",
-                headers=headers,
-                json=payload,
-                timeout=15
-            )
-            if resp.ok:
-                j = resp.json()
-                answer = j["choices"][0]["message"]["content"].strip()
-                return jsonify({"answer": answer, "source": "openai"})
-        except Exception:
-            pass
-
-    # Basit cevap sistemi (API yoksa)
-    q = question.lower()
-    if "merhaba" in q or "selam" in q:
-        answer = "Merhaba! Ben GaripMobilAI 🤖 Nasıl yardımcı olabilirim?"
-    elif "nasılsın" in q:
-        answer = "İyiyim, teşekkürler! Sen nasılsın?"
-    else:
-        answer = f"Sorun alındı: {question}"
-
-    return jsonify({"answer": answer, "source": "fallback"})
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))from fastapi import FastAPI
-
+# FastAPI uygulaması oluştur
 app = FastAPI()
 
+# Ana URL
 @app.get("/")
 def read_root():
-    return {"message": "GaripMobilAI çalışıyor!"}
+    return {"message": "🚀 GaripMobil AI çalışıyor!"}
 
+# Test endpoint
+@app.get("/ping")
+def ping():
+    return {"status": "ok", "message": "pong!"}
+
+# Örnek API (dinamik parametre ile)
+@app.get("/hello/{name}")
+def say_hello(name: str):
+    return {"message": f"Merhaba {name}! GaripMobil AI seni selamlıyor 🤖"}
