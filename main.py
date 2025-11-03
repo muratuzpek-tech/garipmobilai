@@ -1,17 +1,31 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
+import openai
 import os
-import uvicorn
+
+# OpenAI API anahtarını Railway'de Environment Variables kısmına ekleyeceksin
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = FastAPI()
 
+class Prompt(BaseModel):
+    question: str
+
 @app.get("/")
-def read_root():
-    return {"message": "GaripMobil AI is live!"}
+def home():
+    return {"message": "GaripMobil AI aktif 🚀"}
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
-
+@app.post("/ask")
+async def ask_ai(prompt: Prompt):
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt.question}]
+        )
+        answer = response.choices[0].message.content.strip()
+        return {"answer": answer}
+    except Exception as e:
+        return {"error": str(e)}
 
 
 
