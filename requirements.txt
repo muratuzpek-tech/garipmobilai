@@ -1,5 +1,6 @@
-Flask==3.0.3
-requests==2.31.0
-gunicorn==21.2.0
-Procfile
+fastapi
+uvicorn
+gunicorn
 web: gunicorn main:app
+
+
